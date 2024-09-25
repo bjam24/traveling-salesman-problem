@@ -12,17 +12,15 @@ class HillClimbing:
         self.neighbourhood_method = neighbourhood_methods_dict[self.neighbourhood_type]
         self.route = []
         self.energy = 0
-        self.distances = None
 
 
     def solve(self, distances: ndarray) -> tuple:
-        self.distances = distances
         self.route = list(range(distances.shape[0]))
         i = 0
 
         while i < self.multistarts:
             shuffle(self.route)
-            current_energy = calculate_energy(self.route, self.distances)
+            current_energy = calculate_energy(self.route, distances)
             j = 0
 
             while j < self.iterations1:
@@ -37,8 +35,10 @@ class HillClimbing:
 
                     if self.neighbourhood_type == 'swap':
                         new_route = self.neighbourhood_method(new_route, idx_city1, idx_city2)
+                    elif self.neighbourhood_type == 'insertion':
+                        new_route = self.neighbourhood_method(new_route, city1, idx_city2)
 
-                    new_energy = calculate_energy(new_route, self.distances)
+                    new_energy = calculate_energy(new_route, distances)
 
                     if new_energy < min_energy:
                         min_route, min_energy = new_route.copy(), new_energy

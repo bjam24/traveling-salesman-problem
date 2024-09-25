@@ -5,8 +5,8 @@ from math import exp
 
 
 class SimulatedAnnealing:
-    def __init__(self, temperature: int, min_temperature: int, iterations: int, neighbourhood: str, cooling: str):
-        self.temperature = temperature
+    def __init__(self, start_temperature: int, min_temperature: int, iterations: int, neighbourhood: str, cooling: str):
+        self.temperature = start_temperature
         self.min_temperature = min_temperature
         self.iterations = iterations
         self.neighbourhood_type = neighbourhood
@@ -15,14 +15,12 @@ class SimulatedAnnealing:
         self.cooling_method = cooling_methods_dict[self.cooling_type]
         self.route = []
         self.energy = 0
-        self.distances = None
     
 
     def solve(self, distances: ndarray) -> tuple:
-        self.distances = distances
         self.route = list(range(distances.shape[0]))
         shuffle(self.route)
-        self.energy = calculate_energy(self.route, self.distances)
+        self.energy = calculate_energy(self.route, distances)
 
         while self.temperature > self.min_temperature:
             i = 0
@@ -33,18 +31,18 @@ class SimulatedAnnealing:
 
                 if self.neighbourhood_type == 'swap':
                     self.route = self.neighbourhood_method(self.route, idx_city1, idx_city2)
+                if self.neighbourhood_type == 'insertion':
+                    self.route = self.neighbourhood_method(self.route, city1, idx_city2)
 
-                new_energy = calculate_energy(self.route, self.distances)
+                new_energy = calculate_energy(self.route, distances)
                 change_cost = new_energy - self.energy
 
                 if change_cost < 0:
                     self.energy = new_energy
-                else:
-                    if random() < exp(-change_cost / self.temperature):
-                        self.energy = new_energy
-                    else:
-                        if self.neighbourhood_type == 'swap':
-                            self.route = self.neighbourhood_method(self.route, idx_city1, idx_city2)
+                elif random() < exp(-change_cost / self.temperature):
+                    self.energy = new_energy
+                elif self.neighbourhood_type == 'swap':
+                    self.route = self.neighbourhood_method(self.route, idx_city1, idx_city2)
 
                 i += 1
 
