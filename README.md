@@ -29,5 +29,5 @@ The presented results are intended for demonstration purposes only. Finding the 
 <img src="src/images/tsp_simulated_annealing_result.jpg" width="400"/>
 </p>
 
-##Technology stack
+## Technology stack
 - Python
